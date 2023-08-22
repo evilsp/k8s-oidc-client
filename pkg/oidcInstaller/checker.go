@@ -21,7 +21,7 @@ func (c checker) Check(os string) map[string]string {
 	case "darwin":
 		*osPtr = "sh -C"
 	case "windows":
-		*osPtr = "cmd /C"
+		*osPtr = ""
 	case "linux":
 		*osPtr = "sh -C"
 	}
