@@ -31,16 +31,14 @@ func (c checker) Check(os string) map[string]string {
 		fmt.Printf("Detected oidc-login not installed")
 		*resultMap = map[string]string{"exitState": "oidcCheck"}
 		// oidc-login not installed
-	}
-	if err := exec.Command(*strPtr, c.krewCheck).Run(); err != nil {
+	} else if err := exec.Command(*strPtr, c.krewCheck).Run(); err != nil {
 
-		fmt.Printf("Detected oidc-login not installed")
+		fmt.Printf("Detected krew not installed")
 		*resultMap = map[string]string{"exitState": "krewCheck"}
 		// krew and oidc-login not installed
-	}
-	if err := exec.Command(*strPtr, c.kubectlCheck).Run(); err != nil {
+	} else if err := exec.Command(*strPtr, c.kubectlCheck).Run(); err != nil {
 
-		fmt.Printf("Detected oidc-login not installed")
+		fmt.Printf("Detected kubectl not installed")
 		*resultMap = map[string]string{"exitState": "kubectlCheck"}
 		// kubectl not installed
 	}
