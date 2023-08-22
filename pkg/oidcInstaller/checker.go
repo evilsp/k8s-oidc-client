@@ -14,31 +14,31 @@ type checker struct {
 
 func (c checker) Check(os string) map[string]string {
 
-	strPtr := new(string)
+	osPtr := new(string)
 	resultMap := new(map[string]string)
 
 	switch os {
 	case "darwin":
-		*strPtr = "sh -C"
+		*osPtr = "sh -C"
 	case "windows":
-		*strPtr = "cmd /C"
+		*osPtr = "cmd /C"
 	case "linux":
-		*strPtr = "sh -C"
+		*osPtr = "sh -C"
 	}
 	// Check kubectl oidc-login version
-	if err := exec.Command(*strPtr, c.oidcCheck).Run(); err != nil {
+	if err := exec.Command(*osPtr, c.oidcCheck).Run(); err != nil {
 
-		fmt.Printf("Detected oidc-login not installed")
+		fmt.Println("message:", err, "\nDetected oidc-login not installed")
 		*resultMap = map[string]string{"exitState": "oidcCheck"}
 		// oidc-login not installed
-	} else if err := exec.Command(*strPtr, c.krewCheck).Run(); err != nil {
+	} else if err := exec.Command(*osPtr, c.krewCheck).Run(); err != nil {
 
-		fmt.Printf("Detected krew not installed")
+		fmt.Println("message:", err, "\nDetected krew not installed")
 		*resultMap = map[string]string{"exitState": "krewCheck"}
 		// krew and oidc-login not installed
-	} else if err := exec.Command(*strPtr, c.kubectlCheck).Run(); err != nil {
+	} else if err := exec.Command(*osPtr, c.kubectlCheck).Run(); err != nil {
 
-		fmt.Printf("Detected kubectl not installed")
+		fmt.Println("message:", err, "\nDetected kubectl not installed")
 		*resultMap = map[string]string{"exitState": "kubectlCheck"}
 		// kubectl not installed
 	}
