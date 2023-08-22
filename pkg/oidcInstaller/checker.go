@@ -19,24 +19,24 @@ func (c checker) Check(os string) map[string]string {
 
 	switch os {
 	case "darwin":
-		*osPtr = "sh -C"
+		*osPtr = "sh -C "
 	case "windows":
-		*osPtr = ""
+		*osPtr = "~/"
 	case "linux":
-		*osPtr = "sh -C"
+		*osPtr = "sh -C "
 	}
 	// Check kubectl oidc-login version
-	if err := exec.Command(*osPtr, c.oidcCheck).Run(); err != nil {
+	if err := exec.Command(*osPtr + c.oidcCheck).Run(); err != nil {
 
 		fmt.Println("message:", err, "\nDetected oidc-login not installed")
 		*resultMap = map[string]string{"exitState": "oidcCheck"}
 		// oidc-login not installed
-	} else if err := exec.Command(*osPtr, c.krewCheck).Run(); err != nil {
+	} else if err := exec.Command(*osPtr + c.krewCheck).Run(); err != nil {
 
 		fmt.Println("message:", err, "\nDetected krew not installed")
 		*resultMap = map[string]string{"exitState": "krewCheck"}
 		// krew and oidc-login not installed
-	} else if err := exec.Command(*osPtr, c.kubectlCheck).Run(); err != nil {
+	} else if err := exec.Command(*osPtr + c.kubectlCheck).Run(); err != nil {
 
 		fmt.Println("message:", err, "\nDetected kubectl not installed")
 		*resultMap = map[string]string{"exitState": "kubectlCheck"}
