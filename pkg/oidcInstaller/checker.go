@@ -2,6 +2,7 @@ package oidcInstaller
 
 import (
 	"fmt"
+	osCommand "os"
 	"os/exec"
 	"runtime"
 	"strings"
@@ -17,12 +18,13 @@ func (c checker) Check(os string) map[string]string {
 
 	osPtr := new(string)
 	resultMap := new(map[string]string)
+	homeDir, _ := osCommand.UserHomeDir() /* ~ will not be set to user root directory when it's used in go command*/
 
 	switch os {
 	case "darwin":
 		*osPtr = "sh -C "
 	case "windows":
-		*osPtr = "~/"
+		*osPtr = homeDir + "/"
 	case "linux":
 		*osPtr = "sh -C "
 	}
