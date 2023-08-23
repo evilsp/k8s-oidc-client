@@ -5,5 +5,5 @@ import (
 )
 
 func main() {
-	oidcInstaller.Checker()
+	oidcInstaller.
 }
