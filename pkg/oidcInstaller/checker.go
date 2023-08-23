@@ -14,7 +14,7 @@ type checker struct {
 	kubectlCheck string
 }
 
-func (c checker) Check(os string) map[string]string {
+func (c checker) Check(os string, arch string) map[string]string {
 
 	osPtr := new(string)
 	resultMap := new(map[string]string)
@@ -37,17 +37,17 @@ func (c checker) Check(os string) map[string]string {
 	if err := exec.Command(argsOidc[0], argsOidc[1:]...).Run(); err != nil {
 
 		fmt.Println("message:", err, "\nDetected oidc-login not installed")
-		*resultMap = map[string]string{"exitState": "oidcCheck"}
+		*resultMap = map[string]string{"exitState": "oidcCheck", "arch": arch, "os": os}
 		// oidc-login not installed
 	} else if err := exec.Command(argsKrew[0], argsKrew[1:]...).Run(); err != nil {
 
 		fmt.Println("message:", err, "\nDetected krew not installed")
-		*resultMap = map[string]string{"exitState": "krewCheck"}
+		*resultMap = map[string]string{"exitState": "krewCheck", "arch": arch, "os": os}
 		// krew and oidc-login not installed
 	} else if err := exec.Command(argsKubectl[0], argsKubectl[1:]...).Run(); err != nil {
 
 		fmt.Println("message:", err, "\nDetected kubectl not installed")
-		*resultMap = map[string]string{"exitState": "kubectlCheck"}
+		*resultMap = map[string]string{"exitState": "kubectlCheck", "arch": arch, "os": os}
 		// kubectl not installed
 	}
 	return *resultMap
@@ -56,8 +56,8 @@ func (c checker) Check(os string) map[string]string {
 func Checker() map[string]string {
 
 	checkTags := checker{
-		"kubectl oidc-login version",
-		"kubectl krew version",
+		"kubectl oidc-login",
+		"kubectl krew",
 		"kubectl",
 	}
 
@@ -69,5 +69,5 @@ func Checker() map[string]string {
 	fmt.Printf("Operating System: %s\n", os)
 	fmt.Printf("Architecture: %s\n", arch)
 
-	return checkTags.Check(os)
+	return checkTags.Check(os, arch)
 }
