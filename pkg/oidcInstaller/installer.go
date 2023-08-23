@@ -91,6 +91,7 @@ func Installer() {
 		*stage = resultMap["exitState"]
 	} else {
 		fmt.Println("fully Installed!")
+		osCommand.Exit(0)
 	}
 
 	if *os == "linux" {
