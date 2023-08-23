@@ -29,7 +29,6 @@ func (c checker) Check(os string, arch string) map[string]string {
 		*osPtr = ""
 	}
 
-	fmt.Println(*osPtr + c.oidcCheck)
 	argsOidc := strings.Fields(*osPtr + c.oidcCheck)
 	argsKrew := strings.Fields(*osPtr + c.krewCheck)
 	argsKubectl := strings.Fields(*osPtr + c.kubectlCheck)

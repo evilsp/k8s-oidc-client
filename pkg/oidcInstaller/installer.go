@@ -14,38 +14,62 @@ type installCommand struct {
 
 func (insCom installCommand) unixInstall(stage string) {
 
-	exec.Command("echo", insCom.KubectlOIDCInstallCom, ">", "./kubectlOIDCInstall.sh")
-	exec.Command("echo", insCom.kubectlKrewInstallCom, ">", "./kubectlKrewInstall.sh")
-	exec.Command("echo", insCom.kubectlInstallCom, ">", "./kubectlInstall.sh")
+	exec.Command("echo", insCom.KubectlOIDCInstallCom, ">", "./kubectlOIDCInstall.sh").Run()
+	exec.Command("echo", insCom.kubectlKrewInstallCom, ">", "./kubectlKrewInstall.sh").Run()
+	exec.Command("echo", insCom.kubectlInstallCom, ">", "./kubectlInstall.sh").Run()
 	switch stage {
 	case "oidcCheck":
-		exec.Command("sh", "-c", "./kubectlOIDCInstall.sh")
+		if err := exec.Command("sh", "-c", "./kubectlOIDCInstall.sh").Run(); err != nil {
+			fmt.Println("Installing kubectl OIDC went error", err)
+		}
 	case "krewCheck":
-		exec.Command("sh", "-c", "./kubectlOIDCInstall.sh")
-		exec.Command("sh", "-c", "./kubectlKrewInstall.sh")
+		if err := exec.Command("sh", "-c", "./kubectlKrewInstall.sh").Run(); err != nil {
+			fmt.Println("Installing kubectl Krew went error", err)
+		}
+		if err := exec.Command("sh", "-c", "./kubectlOIDCInstall.sh").Run(); err != nil {
+			fmt.Println("Installing kubectl OIDC went error", err)
+		}
 	case "kubectlCheck":
-		exec.Command("sh", "-c", "./kubectlOIDCInstall.sh")
-		exec.Command("sh", "-c", "./kubectlKrewInstall.sh")
-		exec.Command("sh", "-c", "./kubectlInstall.sh")
+		if err := exec.Command("sh", "-c", "./kubectlInstall.sh").Run(); err != nil {
+			fmt.Println("Installing kubectl went error", err)
+		}
+		if err := exec.Command("sh", "-c", "./kubectlKrewInstall.sh").Run(); err != nil {
+			fmt.Println("Installing kubectl Krew went error", err)
+		}
+		if err := exec.Command("sh", "-c", "./kubectlOIDCInstall.sh").Run(); err != nil {
+			fmt.Println("Installing kubectl OIDC went error", err)
+		}
 	}
 }
 
 func (insCom installCommand) winInstall(stage string) {
 
 	homeDir, _ := osCommand.UserHomeDir()
-	exec.Command("echo", insCom.KubectlOIDCInstallCom, ">", "./kubectlOIDCInstall.bat")
-	exec.Command("echo", insCom.kubectlKrewInstallCom, ">", "./kubectlKrewInstall.bat")
-	exec.Command("echo", insCom.kubectlInstallCom, ">", "./kubectlInstall.bat")
+	exec.Command("echo", insCom.KubectlOIDCInstallCom, ">", "./kubectlOIDCInstall.bat").Run()
+	exec.Command("echo", insCom.kubectlKrewInstallCom, ">", "./kubectlKrewInstall.bat").Run()
+	exec.Command("echo", insCom.kubectlInstallCom, ">", "./kubectlInstall.bat").Run()
 	switch stage {
 	case "oidcCheck":
-		exec.Command(homeDir + "/kubectlOIDCInstall.bat")
+		if err := exec.Command(homeDir + "/kubectlOIDCInstall.bat").Run(); err != nil {
+			fmt.Println("Installing kubectl OIDC went error", err)
+		}
 	case "krewCheck":
-		exec.Command(homeDir + "/kubectlOIDCInstall.bat")
-		exec.Command(homeDir + "/kubectlKrewInstall.bat")
+		if err := exec.Command(homeDir + "/kubectlKrewInstall.bat").Run(); err != nil {
+			fmt.Println("Installing kubectl Krew went error", err)
+		}
+		if err := exec.Command(homeDir + "/kubectlOIDCInstall.bat").Run(); err != nil {
+			fmt.Println("Installing kubectl OIDC went error", err)
+		}
 	case "kubectlCheck":
-		exec.Command(homeDir + "/kubectlOIDCInstall.bat")
-		exec.Command(homeDir + "/kubectlKrewInstall.bat")
-		exec.Command(homeDir + "/kubectlInstall.bat")
+		if err := exec.Command(homeDir + "/kubectlInstall.bat").Run(); err != nil {
+			fmt.Println("Installing kubectl went error", err)
+		}
+		if err := exec.Command(homeDir + "/kubectlKrewInstall.bat").Run(); err != nil {
+			fmt.Println("Installing kubectl Krew went error", err)
+		}
+		if err := exec.Command(homeDir + "/kubectlOIDCInstall.bat").Run(); err != nil {
+			fmt.Println("Installing kubectl OIDC went error", err)
+		}
 	}
 }
 
