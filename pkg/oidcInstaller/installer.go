@@ -86,6 +86,8 @@ func Installer() {
 	arch := resultMap["arch"]
 	stage := resultMap["exitState"]
 
+	fmt.Println(os, arch, stage)
+	
 	if os == "linux" {
 		// 进一步判断 Linux 下的体系结构
 
