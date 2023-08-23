@@ -58,7 +58,7 @@ func Checker() map[string]string {
 	checkTags := checker{
 		"kubectl oidc-login version",
 		"kubectl krew version",
-		"kubectl version",
+		"kubectl",
 	}
 
 	os := runtime.GOOS
