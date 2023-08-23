@@ -56,8 +56,8 @@ func (c checker) Check(os string, arch string) map[string]string {
 func Checker() map[string]string {
 
 	checkTags := checker{
-		"kubectl oidc-login",
-		"kubectl krew",
+		"kubectl oidc-login version",
+		"kubectl krew version",
 		"kubectl",
 	}
 
