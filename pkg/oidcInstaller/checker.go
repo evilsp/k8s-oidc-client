@@ -17,7 +17,7 @@ type checker struct {
 func (c checker) Check(os string, arch string) map[string]string {
 
 	osPtr := new(string)
-	resultMap := new(map[string]string)
+	var resultMap map[string]string
 	homeDir, _ := osCommand.UserHomeDir() /* ~ will not be set to user root directory when it's used in go command*/
 
 	switch os {
@@ -37,20 +37,20 @@ func (c checker) Check(os string, arch string) map[string]string {
 	if err := exec.Command(argsOidc[0], argsOidc[1:]...).Run(); err != nil {
 
 		fmt.Println("message:", err, "\nDetected oidc-login not installed")
-		*resultMap = map[string]string{"exitState": "oidcCheck", "arch": arch, "os": os}
+		resultMap = map[string]string{"exitState": "oidcCheck", "arch": arch, "os": os}
 		// oidc-login not installed
 	} else if err := exec.Command(argsKrew[0], argsKrew[1:]...).Run(); err != nil {
 
 		fmt.Println("message:", err, "\nDetected krew not installed")
-		*resultMap = map[string]string{"exitState": "krewCheck", "arch": arch, "os": os}
+		resultMap = map[string]string{"exitState": "krewCheck", "arch": arch, "os": os}
 		// krew and oidc-login not installed
 	} else if err := exec.Command(argsKubectl[0], argsKubectl[1:]...).Run(); err != nil {
 
 		fmt.Println("message:", err, "\nDetected kubectl not installed")
-		*resultMap = map[string]string{"exitState": "kubectlCheck", "arch": arch, "os": os}
+		resultMap = map[string]string{"exitState": "kubectlCheck", "arch": arch, "os": os}
 		// kubectl not installed
 	}
-	return *resultMap
+	return resultMap
 }
 
 func Checker() map[string]string {

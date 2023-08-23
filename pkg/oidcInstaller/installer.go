@@ -81,37 +81,42 @@ func Installer() {
 		KubectlOIDCInstallCom: "kubectl krew install oidc-login",
 	}
 
-	resultMap := Checker()
-	os := resultMap["os"]
-	arch := resultMap["arch"]
-	stage := resultMap["exitState"]
+	os := new(string)
+	arch := new(string)
+	stage := new(string)
 
-	fmt.Println(os, arch, stage)
-	
-	if os == "linux" {
+	if resultMap := Checker(); resultMap != nil {
+		*os = resultMap["os"]
+		*arch = resultMap["arch"]
+		*stage = resultMap["exitState"]
+	} else {
+		fmt.Println("fully Installed!")
+	}
+
+	if *os == "linux" {
 		// 进一步判断 Linux 下的体系结构
 
-		switch arch {
+		switch *arch {
 		case "amd64", "386":
-			linuxAmd64.unixInstall(stage)
+			linuxAmd64.unixInstall(*stage)
 		case "arm64":
-			linuxArm64.unixInstall(stage)
+			linuxArm64.unixInstall(*stage)
 		default:
 			fmt.Println("Unknown architecture on Linux")
 		}
-	} else if os == "windows" {
-		switch arch {
+	} else if *os == "windows" {
+		switch *arch {
 		case "amd64", "386":
-			windows.winInstall(stage)
+			windows.winInstall(*stage)
 		default:
 			fmt.Println("Unknown architecture on Windows")
 		}
-	} else if os == "darwin" {
-		switch arch {
+	} else if *os == "darwin" {
+		switch *arch {
 		case "amd64":
-			macOSIntel.unixInstall(stage)
+			macOSIntel.unixInstall(*stage)
 		case "arm64":
-			macOSAppleSilicon.unixInstall(stage)
+			macOSAppleSilicon.unixInstall(*stage)
 		default:
 			fmt.Println("Unknown architecture on macOS")
 		}
