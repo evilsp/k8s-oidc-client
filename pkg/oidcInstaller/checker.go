@@ -22,11 +22,11 @@ func (c checker) Check(os string, arch string) map[string]string {
 
 	switch os {
 	case "darwin":
-		*osPtr = "sh -c "
+		*osPtr = ""
 	case "windows":
 		*osPtr = homeDir + "/"
 	case "linux":
-		*osPtr = "sh -c "
+		*osPtr = ""
 	}
 
 	argsOidc := strings.Fields(*osPtr + c.oidcCheck)
