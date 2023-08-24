@@ -14,29 +14,29 @@ type installCommand struct {
 
 func (insCom installCommand) unixInstall(stage string) {
 
-	exec.Command("echo", insCom.KubectlOIDCInstallCom, ">", "./kubectlOIDCInstall.sh", "&&", "chmod", "u+x", "./kubectlOIDCInstall.sh").Run()
-	exec.Command("echo", insCom.kubectlKrewInstallCom, ">", "./kubectlKrewInstall.sh", "&&", "chmod", "u+x", "./kubectlKrewInstall.sh").Run()
-	exec.Command("echo", insCom.kubectlInstallCom, ">", "./kubectlInstall.sh", "&&", "chmod", "u+x", "./kubectlInstall.sh").Run()
+	exec.Command("/bin/sh", "-c", "echo", insCom.KubectlOIDCInstallCom, ">", "./kubectlOIDCInstall.sh", "&&", "chmod", "u+x", "./kubectlOIDCInstall.sh").Run()
+	exec.Command("/bin/sh", "-c", "echo", insCom.kubectlKrewInstallCom, ">", "./kubectlKrewInstall.sh", "&&", "chmod", "u+x", "./kubectlKrewInstall.sh").Run()
+	exec.Command("/bin/sh", "-c", "echo", insCom.kubectlInstallCom, ">", "./kubectlInstall.sh", "&&", "chmod", "u+x", "./kubectlInstall.sh").Run()
 	switch stage {
 	case "oidcCheck":
-		if err := exec.Command("sh", "-c", "./kubectlOIDCInstall.sh").Run(); err != nil {
+		if err := exec.Command("/bin/sh", "-c", "./kubectlOIDCInstall.sh").Run(); err != nil {
 			fmt.Println("Installing kubectl OIDC went error", err)
 		}
 	case "krewCheck":
-		if err := exec.Command("sh", "-c", "./kubectlKrewInstall.sh").Run(); err != nil {
+		if err := exec.Command("/bin/sh", "-c", "./kubectlKrewInstall.sh").Run(); err != nil {
 			fmt.Println("Installing kubectl Krew went error", err)
 		}
-		if err := exec.Command("sh", "-c", "./kubectlOIDCInstall.sh").Run(); err != nil {
+		if err := exec.Command("/bin/sh", "-c", "./kubectlOIDCInstall.sh").Run(); err != nil {
 			fmt.Println("Installing kubectl OIDC went error", err)
 		}
 	case "kubectlCheck":
-		if err := exec.Command("sh", "-c", "./kubectlInstall.sh").Run(); err != nil {
+		if err := exec.Command("/bin/sh", "-c", "./kubectlInstall.sh").Run(); err != nil {
 			fmt.Println("Installing kubectl went error", err)
 		}
-		if err := exec.Command("sh", "-c", "./kubectlKrewInstall.sh").Run(); err != nil {
+		if err := exec.Command("/bin/sh", "-c", "./kubectlKrewInstall.sh").Run(); err != nil {
 			fmt.Println("Installing kubectl Krew went error", err)
 		}
-		if err := exec.Command("sh", "-c", "./kubectlOIDCInstall.sh").Run(); err != nil {
+		if err := exec.Command("/bin/sh", "-c", "./kubectlOIDCInstall.sh").Run(); err != nil {
 			fmt.Println("Installing kubectl OIDC went error", err)
 		}
 	}
