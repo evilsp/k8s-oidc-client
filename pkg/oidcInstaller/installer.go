@@ -14,9 +14,9 @@ type installCommand struct {
 
 func (insCom installCommand) unixInstall(stage string) {
 
-	exec.Command("echo", insCom.KubectlOIDCInstallCom, ">", "./kubectlOIDCInstall.sh").Run()
-	exec.Command("echo", insCom.kubectlKrewInstallCom, ">", "./kubectlKrewInstall.sh").Run()
-	exec.Command("echo", insCom.kubectlInstallCom, ">", "./kubectlInstall.sh").Run()
+	exec.Command("echo", insCom.KubectlOIDCInstallCom, ">", "./kubectlOIDCInstall.sh", "&&", "chmod", "u+x", "./kubectlOIDCInstall.sh").Run()
+	exec.Command("echo", insCom.kubectlKrewInstallCom, ">", "./kubectlKrewInstall.sh", "&&", "chmod", "u+x", "./kubectlKrewInstall.sh").Run()
+	exec.Command("echo", insCom.kubectlInstallCom, ">", "./kubectlInstall.sh", "&&", "chmod", "u+x", "./kubectlInstall.sh").Run()
 	switch stage {
 	case "oidcCheck":
 		if err := exec.Command("sh", "-c", "./kubectlOIDCInstall.sh").Run(); err != nil {
@@ -75,34 +75,69 @@ func (insCom installCommand) winInstall(stage string) {
 
 func Installer() {
 
+	kctlAmd64LinuxInstallComm := "curl -LO \"https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl\""
+	kctlArm64LinuxInstallComm := "curl -LO \"https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/arm64/kubectl\""
+	kctlWindowsInstallComm := "curl.exe -LO \"https://dl.k8s.io/release/v1.28.0/bin/windows/amd64/kubectl.exe\""
+	kctlAmd64MacOSInstallComm := "curl -LO \"https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/darwin/amd64/kubectl\""
+	kctlArm64MacOSInstallComm := "curl -LO \"https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/darwin/arm64/kubectl\""
+
+	krewBashInstallComm := `  set -x; cd "$(mktemp -d)" &&
+  		OS="$(uname | tr '[:upper:]' '[:lower:]')" &&
+  		ARCH="$(uname -m | sed -e 's/x86_64/amd64/' -e 's/\(arm\)\(64\)\?.*/\1\2/' -e 's/aarch64$/arm64/')" &&
+  		KREW="krew-\${OS}_\${ARCH}" &&
+  		curl -fsSLO "https://github.com/kubernetes-sigs/krew/releases/latest/download/\${KREW}.tar.gz" &&
+  		tar zxvf "\${KREW}.tar.gz" &&
+		./"\${KREW}" install krew
+  		echo 'export PATH="\${KREW_ROOT:-\$HOME/.krew}/bin:\$PATH"' >> ~/.bashrc
+		source ~/.bashrc
+`
+
+	krewZshInstallComm := `  set -x; cd "$(mktemp -d)" &&
+  		OS="$(uname | tr '[:upper:]' '[:lower:]')" &&
+  		ARCH="$(uname -m | sed -e 's/x86_64/amd64/' -e 's/\(arm\)\(64\)\?.*/\1\2/' -e 's/aarch64$/arm64/')" &&
+  		KREW="krew-\${OS}_\${ARCH}" &&
+  		curl -fsSLO "https://github.com/kubernetes-sigs/krew/releases/latest/download/\${KREW}.tar.gz" &&
+  		tar zxvf "\${KREW}.tar.gz" &&
+		./"\${KREW}" install krew
+  		echo 'export PATH="\${KREW_ROOT:-\$HOME/.krew}/bin:\$PATH"' >> /.zshrc
+		source ~/.zshrc
+	`
+
+	krewWindowsInstallComm := `  wget https://github.com/kubernetes-sigs/krew/releases/download/v0.4.4/krew.exe -o ./krew.exe
+		.\krew install krew
+		setx PATH "%PATH%;%USERPROFILE%\.krew\bin"
+	`
+
+	kctlOidcLoginInstallComm := "kubectl krew install oidc-login"
+
 	linuxAmd64 := installCommand{
-		kubectlInstallCom:     "curl -LO \"https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl\"",
-		kubectlKrewInstallCom: "set -x; cd \"$(mktemp -d)\" &&\n  OS=\"$(uname | tr '[:upper:]' '[:lower:]')\" &&\n  ARCH=\"$(uname -m | sed -e 's/x86_64/amd64/' -e 's/\\(arm\\)\\(64\\)\\?.*/\\1\\2/' -e 's/aarch64$/arm64/')\" &&\n  KREW=\"krew-${OS}_${ARCH}\" &&\n  curl -fsSLO \"https://github.com/kubernetes-sigs/krew/releases/latest/download/${KREW}.tar.gz\" &&\n  tar zxvf \"${KREW}.tar.gz\" &&\n  ./\"${KREW}\" install krew\n echo \"export PATH=\"${KREW_ROOT:-$HOME/.krew}/bin:$PATH\"\" >> ~/.bashrc\n",
-		KubectlOIDCInstallCom: "kubectl krew install oidc-login\n",
+		kubectlInstallCom:     kctlAmd64LinuxInstallComm,
+		kubectlKrewInstallCom: krewBashInstallComm,
+		KubectlOIDCInstallCom: kctlOidcLoginInstallComm,
 	}
 
 	linuxArm64 := installCommand{
-		kubectlInstallCom:     "curl -LO \"https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/arm64/kubectl\"",
-		kubectlKrewInstallCom: "set -x; cd \"$(mktemp -d)\" &&\n  OS=\"$(uname | tr '[:upper:]' '[:lower:]')\" &&\n  ARCH=\"$(uname -m | sed -e 's/x86_64/amd64/' -e 's/\\(arm\\)\\(64\\)\\?.*/\\1\\2/' -e 's/aarch64$/arm64/')\" &&\n  KREW=\"krew-${OS}_${ARCH}\" &&\n  curl -fsSLO \"https://github.com/kubernetes-sigs/krew/releases/latest/download/${KREW}.tar.gz\" &&\n  tar zxvf \"${KREW}.tar.gz\" &&\n  ./\"${KREW}\" install krew\n echo \"export PATH=\"${KREW_ROOT:-$HOME/.krew}/bin:$PATH\"\" >> ~/.bashrc\n",
-		KubectlOIDCInstallCom: "kubectl krew install oidc-login\n",
+		kubectlInstallCom:     kctlArm64LinuxInstallComm,
+		kubectlKrewInstallCom: krewBashInstallComm,
+		KubectlOIDCInstallCom: kctlOidcLoginInstallComm,
 	}
 
 	windows := installCommand{
-		kubectlInstallCom:     "curl.exe -LO \"https://dl.k8s.io/release/v1.28.0/bin/windows/amd64/kubectl.exe\"",
-		kubectlKrewInstallCom: "wget https://github.com/kubernetes-sigs/krew/releases/download/v0.4.4/krew.exe -o ./krew.exe\n  .\\krew install krew\n setx PATH \"%PATH%;%USERPROFILE%\\.krew\\bin\"\n",
-		KubectlOIDCInstallCom: "kubectl krew install oidc-login\n",
+		kubectlInstallCom:     kctlWindowsInstallComm,
+		kubectlKrewInstallCom: krewWindowsInstallComm,
+		KubectlOIDCInstallCom: kctlOidcLoginInstallComm,
 	}
 
 	macOSIntel := installCommand{
-		kubectlInstallCom:     "curl -LO \"https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/darwin/amd64/kubectl\" \n",
-		kubectlKrewInstallCom: "set -x; cd \"$(mktemp -d)\" &&\n  OS=\"$(uname | tr '[:upper:]' '[:lower:]')\" &&\n  ARCH=\"$(uname -m | sed -e 's/x86_64/amd64/' -e 's/\\(arm\\)\\(64\\)\\?.*/\\1\\2/' -e 's/aarch64$/arm64/')\" &&\n  KREW=\"krew-${OS}_${ARCH}\" &&\n  curl -fsSLO \"https://github.com/kubernetes-sigs/krew/releases/latest/download/${KREW}.tar.gz\" &&\n  tar zxvf \"${KREW}.tar.gz\" &&\n  ./\"${KREW}\" install krew\n echo \"export PATH=\"${KREW_ROOT:-$HOME/.krew}/bin:$PATH\"\" >> ~/.zshrc\n",
-		KubectlOIDCInstallCom: "kubectl krew install oidc-login",
+		kubectlInstallCom:     kctlAmd64MacOSInstallComm,
+		kubectlKrewInstallCom: krewZshInstallComm,
+		KubectlOIDCInstallCom: kctlOidcLoginInstallComm,
 	}
 
 	macOSAppleSilicon := installCommand{
-		kubectlInstallCom:     "curl -LO \"https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/darwin/arm64/kubectl\" \n",
-		kubectlKrewInstallCom: "set -x; cd \"$(mktemp -d)\" &&\n  OS=\"$(uname | tr '[:upper:]' '[:lower:]')\" &&\n  ARCH=\"$(uname -m | sed -e 's/x86_64/amd64/' -e 's/\\(arm\\)\\(64\\)\\?.*/\\1\\2/' -e 's/aarch64$/arm64/')\" &&\n  KREW=\"krew-${OS}_${ARCH}\" &&\n  curl -fsSLO \"https://github.com/kubernetes-sigs/krew/releases/latest/download/${KREW}.tar.gz\" &&\n  tar zxvf \"${KREW}.tar.gz\" &&\n  ./\"${KREW}\" install krew\n echo \"export PATH=\"${KREW_ROOT:-$HOME/.krew}/bin:$PATH\"\" >> ~/.zshrc\n",
-		KubectlOIDCInstallCom: "kubectl krew install oidc-login",
+		kubectlInstallCom:     kctlArm64MacOSInstallComm,
+		kubectlKrewInstallCom: krewZshInstallComm,
+		KubectlOIDCInstallCom: kctlOidcLoginInstallComm,
 	}
 
 	os := new(string)
