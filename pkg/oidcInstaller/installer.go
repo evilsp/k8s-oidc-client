@@ -14,9 +14,9 @@ type installCommand struct {
 
 func (insCom installCommand) unixInstall(stage string) {
 
-	fmt.Println(exec.Command("/bin/sh", "-c", "echo", "\""+insCom.KubectlOIDCInstallCom+"\"", ">", "./kubectlOIDCInstall.sh", "&&", "chmod", "u+x", "./kubectlOIDCInstall.sh").Run())
-	fmt.Println(exec.Command("/bin/sh", "-c", "echo", "\""+insCom.kubectlKrewInstallCom+"\"", ">", "./kubectlKrewInstall.sh", "&&", "chmod", "u+x", "./kubectlKrewInstall.sh").Run())
-	fmt.Println(exec.Command("/bin/sh", "-c", "echo", "\""+insCom.kubectlInstallCom+"\"", ">", "./kubectlInstall.sh", "&&", "chmod", "u+x", "./kubectlInstall.sh").Run())
+	fmt.Println(exec.Command("/bin/sh", "-c", "echo", "\""+insCom.KubectlOIDCInstallCom+"\"", ">", "~/kubectlOIDCInstall.sh", "&&", "chmod", "u+x", "~/kubectlOIDCInstall.sh").Run())
+	fmt.Println(exec.Command("/bin/sh", "-c", "echo", "\""+insCom.kubectlKrewInstallCom+"\"", ">", "~/kubectlKrewInstall.sh", "&&", "chmod", "u+x", "~/kubectlKrewInstall.sh").Run())
+	fmt.Println(exec.Command("/bin/sh", "-c", "echo", "\""+insCom.kubectlInstallCom+"\"", ">", "~/kubectlInstall.sh", "&&", "chmod", "u+x", "~/kubectlInstall.sh").Run())
 	switch stage {
 	case "oidcCheck":
 		if err := exec.Command("/bin/sh", "-c", "./kubectlOIDCInstall.sh").Run(); err != nil {
