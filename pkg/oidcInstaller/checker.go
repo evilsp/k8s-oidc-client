@@ -39,12 +39,16 @@ func (c checker) Check(os string, arch string) map[string]string {
 		fmt.Println("message:", err, "\nDetected oidc-login not installed")
 		resultMap = map[string]string{"exitState": "oidcCheck", "arch": arch, "os": os}
 		// oidc-login not installed
-	} else if err := exec.Command(argsKrew[0], argsKrew[1:]...).Run(); err != nil {
+	}
+
+	if err := exec.Command(argsKrew[0], argsKrew[1:]...).Run(); err != nil {
 
 		fmt.Println("message:", err, "\nDetected krew not installed")
 		resultMap = map[string]string{"exitState": "krewCheck", "arch": arch, "os": os}
 		// krew and oidc-login not installed
-	} else if err := exec.Command(argsKubectl[0], argsKubectl[1:]...).Run(); err != nil {
+	}
+	
+	if err := exec.Command(argsKubectl[0], argsKubectl[1:]...).Run(); err != nil {
 
 		fmt.Println("message:", err, "\nDetected kubectl not installed")
 		resultMap = map[string]string{"exitState": "kubectlCheck", "arch": arch, "os": os}
